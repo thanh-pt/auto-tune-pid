@@ -1,3 +1,10 @@
+#include <SoftwareSerial.h>
+
+#define TX_PIN      12
+#define RX_PIN      11
+#define BLUETOOTH_VCC 9
+#define BLUETOOTH_GND 10
+
 #define encoder_input_a 6
 #define encoder_input_b 7
 #define motor_signal_control 5
@@ -95,6 +102,8 @@ class motor_control : public pid_system {
 };
 
 motor_control m1;
+SoftwareSerial bluetooth(RX_PIN, TX_PIN);
+int baudRate[] = {300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200};
 
 void setup() {
   pinMode (encoder_input_a, INPUT);
@@ -103,6 +112,28 @@ void setup() {
   Serial.begin (9600);
   encoder_input_a_last_state = digitalRead(encoder_input_a);
 
+  // Config bluetooth
+  pinMode(BLUETOOTH_VCC, OUTPUT);
+  pinMode(BLUETOOTH_GND, OUTPUT);
+  digitalWrite(BLUETOOTH_VCC, HIGH);
+  digitalWrite(BLUETOOTH_GND, LOW);
+  while (!Serial) {}
+  
+  Serial.println("Configuring, please wait...");
+  
+  for (int i = 0 ; i < 9 ; i++) {
+     bluetooth.begin(baudRate[i]);
+     String cmd = "AT+BAUD4";
+     bluetooth.print("AT+BAUD4\t\n");
+     bluetooth.flush();
+     delay(100);
+  }
+  
+  bluetooth.begin(9600);
+  Serial.println("Config done");
+  while (!bluetooth) {}
+  
+  Serial.println("Enter AT commands:");
   // start delay
   delay_start = millis();
   delay_running = true;
@@ -128,15 +159,21 @@ void loop() {
     
     // PID measure:
     m1.update(counter);
-    Serial.print(" ");
-    Serial.print(m1.getSetPoint());
-    Serial.print(" ");
-    Serial.print(counter);
-    Serial.print(" ");
-    Serial.println(0);
+    // Serial.print(" ");
+    // Serial.print(m1.getSetPoint());
+    // Serial.print(" ");
+    // Serial.print(counter);
+    // Serial.print(" ");
+    // Serial.println(0);
+    bluetooth.write("HELLO\t\n");
 
     // Reset counter:
     counter = 0;
   }
+  if (bluetooth.available()) {
+    Serial.write(bluetooth.read());
+  }
+  if (Serial.available()) {
+    // bluetooth.write(Serial.read());
+  }
 }
-
