@@ -21,6 +21,8 @@ int counter = 0;
 int encoder_input_a_state;
 int encoder_input_a_last_state;
 
+char result[10] = "";
+
 class pid_system {
   private:
     float m_Kp, m_Ki, m_Kd;
@@ -165,7 +167,8 @@ void loop() {
     // Serial.print(counter);
     // Serial.print(" ");
     // Serial.println(0);
-    bluetooth.write("HELLO\t\n");
+    sprintf(result, "%d\t\n", counter);
+    bluetooth.write(result);
 
     // Reset counter:
     counter = 0;
