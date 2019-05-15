@@ -99,7 +99,7 @@ class motor_control : public pid_system {
   }
   void control(){
     int a = round(getOutput());
-    analogWrite(m_control_pin, a);
+    //analogWrite(m_control_pin, a);
   }
 };
 

@@ -114,11 +114,14 @@ public class BluetoothService {
         workerThread.start();
     }
 
-    void sendData() throws IOException {
-//        String msg = myTextbox.getText().toString();
-//        msg += "\n";
-//        mmOutputStream.write(msg.getBytes());
-//        myLabel.setText("Data Sent");
+    public void sendData(String data) {
+        String msg = data + "\t\n";
+        try {
+            mmOutputStream.write(msg.getBytes());
+            mPresenter.updateText("Data Sent" + data);
+        } catch (IOException ex){
+            mPresenter.updateText(ex.toString());
+        }
     }
 
     void closeBT() throws IOException {
