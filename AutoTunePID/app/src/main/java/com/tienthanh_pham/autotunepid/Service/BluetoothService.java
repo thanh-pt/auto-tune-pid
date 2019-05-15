@@ -115,7 +115,7 @@ public class BluetoothService {
     }
 
     public void sendData(String data) {
-        String msg = data + "\t\n";
+        String msg = data + "\n";
         try {
             mmOutputStream.write(msg.getBytes());
             mPresenter.updateText("Data Sent" + data);

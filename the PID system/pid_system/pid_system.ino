@@ -1,4 +1,5 @@
 #include <SoftwareSerial.h>
+#include <stdio.h>
 
 #define TX_PIN      12
 #define RX_PIN      11
@@ -122,20 +123,16 @@ void setup() {
   while (!Serial) {}
   
   Serial.println("Configuring, please wait...");
-  
   for (int i = 0 ; i < 9 ; i++) {
      bluetooth.begin(baudRate[i]);
-     String cmd = "AT+BAUD4";
-     bluetooth.print("AT+BAUD4\t\n");
+     bluetooth.print("AT+BAUD8\t\n");
      bluetooth.flush();
      delay(100);
   }
-  
-  bluetooth.begin(9600);
-  Serial.println("Config done");
+  bluetooth.begin(115200);
+  Serial.println("Config done, wait for ready...");
   while (!bluetooth) {}
-  
-  Serial.println("Enter AT commands:");
+  Serial.println("Bluetooth is ready!");
   // start delay
   delay_start = millis();
   delay_running = true;
@@ -161,22 +158,28 @@ void loop() {
     
     // PID measure:
     m1.update(counter);
-    // Serial.print(" ");
-    // Serial.print(m1.getSetPoint());
-    // Serial.print(" ");
-    // Serial.print(counter);
-    // Serial.print(" ");
-    // Serial.println(0);
+    // TODO: sent the data to the phone
     sprintf(result, "%d\t\n", counter);
     bluetooth.write(result);
 
     // Reset counter:
     counter = 0;
   }
+
+  // TODO: receive PID data from phone and reset the PID system
   if (bluetooth.available()) {
-    Serial.write(bluetooth.read());
-  }
-  if (Serial.available()) {
-    // bluetooth.write(Serial.read());
+    int p, i;
+    float d = 1.12;
+    Serial.println(d);
+    char receiveStr[80] = "";
+    int len = 0;
+    while (bluetooth.available()){
+      receiveStr[len++] = (char)bluetooth.read();
+    }
+    Serial.println(receiveStr);
+    Serial.println(sscanf(receiveStr, "%f",&d));
+    Serial.println(p);
+    Serial.println(i);
+    Serial.println(d);
   }
 }
