@@ -7,28 +7,64 @@
     tools:context=".MainActivity"
     android:orientation="vertical">
 
-    <TextView
+    <com.github.mikephil.charting.charts.LineChart
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Receive String:"/>
-    <TextView
-        android:id="@+id/target_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:layout_height="200dp"
+        android:id="@+id/lineChart"></com.github.mikephil.charting.charts.LineChart>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <EditText
-            android:id="@+id/input_text"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="PID"/>
+            android:text="Bật tắt thiết bị: "/>
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnOnOff"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chỉnh setPoint: "/>
+        <EditText
+            android:id="@+id/txtSetPoint"
+            android:layout_width="50pt"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/btnSetPoint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sent data"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cài đặt PID: "/>
+        <EditText
+            android:id="@+id/txtPID"
+            android:layout_width="80pt"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btnSetPID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sent Data"/>
+
     </LinearLayout>
     <Button
-        android:id="@+id/btn_sent"
+        android:id="@+id/btnAutoTunePID"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sent"/>
+        android:text="Tự động chỉnh PID"/>
 
 </android.support.v7.widget.LinearLayoutCompat>

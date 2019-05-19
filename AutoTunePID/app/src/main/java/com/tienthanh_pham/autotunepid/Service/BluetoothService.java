@@ -39,11 +39,11 @@ public class BluetoothService {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(mBluetoothAdapter==null)
         {
-            mPresenter.updateText("Does not support bluetooth");
+//            mPresenter.updateText("Does not support bluetooth");
         } else if (!mBluetoothAdapter.isEnabled()) {
-            mPresenter.updateText("Please turn on the Bluetooth");
+//            mPresenter.updateText("Please turn on the Bluetooth");
         } else {
-            mPresenter.updateText("its good!");
+//            mPresenter.updateText("its good!");
             Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
             if (pairedDevices.size() > 0) {
@@ -52,7 +52,7 @@ public class BluetoothService {
                     mmDevice = device;
                     String deviceName = device.getName();
                     String deviceHardwareAddress = device.getAddress(); // MAC address
-                    mPresenter.updateText(deviceName + deviceHardwareAddress);
+//                    mPresenter.updateText(deviceName + deviceHardwareAddress);
                 }
                 openBT();
             }
@@ -68,7 +68,7 @@ public class BluetoothService {
 
         beginListenForData();
 
-        mPresenter.updateText("Bluetooth Opened");
+//        mPresenter.updateText("Bluetooth Opened");
     }
 
     void beginListenForData() {
@@ -96,7 +96,7 @@ public class BluetoothService {
 
                                     handler.post(new Runnable() {
                                         public void run() {
-                                            mPresenter.updateText(data);
+                                            mPresenter.updateData(data);
                                         }
                                     });
                                 } else {
@@ -118,9 +118,9 @@ public class BluetoothService {
         String msg = data + "\n";
         try {
             mmOutputStream.write(msg.getBytes());
-            mPresenter.updateText("Data Sent" + data);
+//            mPresenter.updateText("Data Sent" + data);
         } catch (IOException ex){
-            mPresenter.updateText(ex.toString());
+//            mPresenter.updateText(ex.toString());
         }
     }
 
@@ -129,6 +129,6 @@ public class BluetoothService {
         mmOutputStream.close();
         mmInputStream.close();
         mmSocket.close();
-        mPresenter.updateText("Bluetooth Closed");
+//        mPresenter.updateText("Bluetooth Closed");
     }
 }

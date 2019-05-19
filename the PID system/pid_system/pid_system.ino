@@ -22,16 +22,16 @@ int counter = 0;
 int encoder_input_a_state;
 int encoder_input_a_last_state;
 
-char result[10] = "";
+char result[30] = "";
 
 class pid_system {
   private:
     float m_Kp, m_Ki, m_Kd;
 
-    float m_setPoint = 0;
+    int m_setPoint = 0;
 
-    float m_previous_error = 0;
-    float m_error = 0;
+    int m_previous_error = 0;
+    int m_error = 0;
 
     float m_output = 0;
 
@@ -41,7 +41,7 @@ class pid_system {
     float m_derivative = 0;
   public:
     pid_system(){};
-    pid_system(float Kp, float Ki, float Kd, float dt, float SetPoint)
+    pid_system(float Kp, float Ki, float Kd, float dt, int SetPoint)
     : m_Kp(Kp)
     , m_Ki(Ki)
     , m_Kd(Kd)
@@ -53,8 +53,10 @@ class pid_system {
       m_Kp = Kp;
       m_Ki = Ki;
       m_Kd = Kd;
+      m_previous_error = 0;
+      m_error = 0;
     }
-    void setSetpoint(float SetPoint){
+    void setSetpoint(int SetPoint){
       m_setPoint = SetPoint;
     }
     void setDt(float dt){
@@ -64,7 +66,7 @@ class pid_system {
     float getOutput(){
       return m_output;
     }
-    float getSetPoint(){
+    int getSetPoint(){
       return m_setPoint;
     }
   public:
@@ -88,9 +90,10 @@ class pid_system {
 };
 
 class motor_control : public pid_system {
-  private:
-    int m_control_pin = 5;
-  public:
+private:
+  int m_control_pin = 5;
+public:
+  bool isRun = false;
   void setPin(int pin){
     m_control_pin = pin;
     pinMode(m_control_pin, OUTPUT);
@@ -98,15 +101,45 @@ class motor_control : public pid_system {
   void convert(float& output){
     output = round(output);
   }
+  void turnOff(){
+    analogWrite(m_control_pin, 0);
+  }
   void control(){
     int a = round(getOutput());
-    //analogWrite(m_control_pin, a);
+    analogWrite(m_control_pin, a);
   }
 };
 
 motor_control m1;
 SoftwareSerial bluetooth(RX_PIN, TX_PIN);
 int baudRate[] = {300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200};
+
+void excurseCmd(char str[80]){
+  Serial.println(str);
+  int cmd = 0;
+  int p, i, d;
+  sscanf(str, "%d %d %d %d", &cmd, &p, &i, &d);
+  switch (cmd){
+    case 0:
+    m1.isRun = false;
+    break;
+    case 1:
+    m1.isRun = true;
+    break;
+    case 2:
+    m1.setSetpoint((float)p);
+    break;
+    case 3:
+    m1.isRun = false;
+    m1.setupPID((float)p / 100, (float)i/100, (float)d/100);
+    m1.isRun = true;
+    break;
+    case 4:
+    break;
+    case 5:
+    break;
+    }
+}
 
 void setup() {
   pinMode (encoder_input_a, INPUT);
@@ -157,29 +190,26 @@ void loop() {
     delay_start += DELAY_TIME;
     
     // PID measure:
-    m1.update(counter);
+    if (m1.isRun){
+      m1.update(counter);
+    } else {
+      m1.turnOff();
+    }
     // TODO: sent the data to the phone
-    sprintf(result, "%d\t\n", counter);
+    sprintf(result, "%d %d\n", m1.getSetPoint(), counter);
     bluetooth.write(result);
+    Serial.println(result);
 
     // Reset counter:
     counter = 0;
   }
 
-  // TODO: receive PID data from phone and reset the PID system
   if (bluetooth.available()) {
-    int p, i;
-    float d = 1.12;
-    Serial.println(d);
     char receiveStr[80] = "";
     int len = 0;
     while (bluetooth.available()){
       receiveStr[len++] = (char)bluetooth.read();
     }
-    Serial.println(receiveStr);
-    Serial.println(sscanf(receiveStr, "%f",&d));
-    Serial.println(p);
-    Serial.println(i);
-    Serial.println(d);
+    excurseCmd(receiveStr);
   }
 }
