@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        messageShow("Ứng dụng bắt đầu chạy!");
+
         mPresenter = new MainActivityPresenter(this);
 
         final ToggleButton toggleOnOff = findViewById(R.id.btnOnOff);
@@ -59,6 +62,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
             public void onClick(View v) {
                 EditText txtPID = findViewById(R.id.txtPID);
                 mPresenter.sentCmd(3, txtPID.getText().toString());
+            }
+        });
+
+        final ToggleButton toggleOnOffBluetooth = findViewById(R.id.btnOnOffBluetooth);
+        toggleOnOffBluetooth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mPresenter.sentCmd(4, isChecked ? "1" : "0");
             }
         });
 
@@ -98,6 +109,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
             LineData data = new LineData(mLDSCurrentSpeed, mLDSSetPoint);
             chart.setData(data);
         }
+    }
+
+    @Override
+    public void messageShow(String msg) {
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
     private void lineChartInit(){

@@ -39,11 +39,11 @@ public class BluetoothService {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(mBluetoothAdapter==null)
         {
-//            mPresenter.updateText("Does not support bluetooth");
+            mPresenter.showMessage("Does not support bluetooth");
         } else if (!mBluetoothAdapter.isEnabled()) {
-//            mPresenter.updateText("Please turn on the Bluetooth");
+            mPresenter.showMessage("Please turn on the Bluetooth");
         } else {
-//            mPresenter.updateText("its good!");
+            mPresenter.showMessage("its good!");
             Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
             if (pairedDevices.size() > 0) {
@@ -52,23 +52,27 @@ public class BluetoothService {
                     mmDevice = device;
                     String deviceName = device.getName();
                     String deviceHardwareAddress = device.getAddress(); // MAC address
-//                    mPresenter.updateText(deviceName + deviceHardwareAddress);
+                    mPresenter.showMessage(deviceName + deviceHardwareAddress);
                 }
                 openBT();
             }
         }
     }
 
-    void openBT() throws IOException {
-        UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID
-        mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
-        mmSocket.connect();
-        mmOutputStream = mmSocket.getOutputStream();
-        mmInputStream = mmSocket.getInputStream();
+    public void openBT() {
+        try {
+            UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID
+            mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
+            mmSocket.connect();
+            mmOutputStream = mmSocket.getOutputStream();
+            mmInputStream = mmSocket.getInputStream();
 
-        beginListenForData();
+            beginListenForData();
 
-//        mPresenter.updateText("Bluetooth Opened");
+            mPresenter.showMessage("Bluetooth Opened");
+        } catch (IOException ex){
+
+        }
     }
 
     void beginListenForData() {
@@ -118,17 +122,21 @@ public class BluetoothService {
         String msg = data + "\n";
         try {
             mmOutputStream.write(msg.getBytes());
-//            mPresenter.updateText("Data Sent" + data);
+//            mPresenter.showMessage("Data Sent" + data);
         } catch (IOException ex){
-//            mPresenter.updateText(ex.toString());
+            mPresenter.showMessage(ex.toString());
         }
     }
 
-    void closeBT() throws IOException {
-        stopWorker = true;
-        mmOutputStream.close();
-        mmInputStream.close();
-        mmSocket.close();
-//        mPresenter.updateText("Bluetooth Closed");
+    public void closeBT() {
+        try {
+            stopWorker = true;
+            mmOutputStream.close();
+            mmInputStream.close();
+            mmSocket.close();
+            mPresenter.showMessage("Bluetooth Closed");
+        } catch (IOException ex){
+
+        }
     }
 }

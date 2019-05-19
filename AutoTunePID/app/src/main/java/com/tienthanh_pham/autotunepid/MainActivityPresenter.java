@@ -28,6 +28,11 @@ public class MainActivityPresenter {
                 requestSentData("3 " + para);
                 break;
             case 4:
+                if (para.compareTo("1") == 0 ){
+                    mBluetooth.openBT();
+                } else {
+                    mBluetooth.closeBT();
+                }
                 break;
         }
     }
@@ -38,6 +43,9 @@ public class MainActivityPresenter {
 
     public void updateChart(int setPoint, int currentSpeed){
         mView.updateChart(setPoint, currentSpeed);
+    }
+    public void showMessage(String msg){
+        mView.messageShow(msg);
     }
 
     public void updateData(String data){
@@ -53,5 +61,6 @@ public class MainActivityPresenter {
 
     public interface View {
         void updateChart(int setPoint, int currentSpeech);
+        void messageShow(String msg);
     }
 }
